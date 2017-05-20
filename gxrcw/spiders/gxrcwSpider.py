@@ -18,20 +18,25 @@ class GxrcwspiderSpider(scrapy.Spider):
         # jobsItems = []
         jobs = response.css('div.rlOne')
         for job in jobs:
-            jobsItem = GxrcwItem()
+            # Items对象是可变类型,内容改变后地址保持不变
+            # 如果放在for循环外面的话,jobsItem实例一直指向同一个地址
+            # 即在meta参数传递的都是指向同一个地址的jobsItem实例,只是内容改变了,以前的内容会被新的内容覆盖
+            # 只有每次重新执行parse_jobs()方法后,jobsItem实例指向的地址才会发生变化
+            # 所以放在for循环外面得到的数据第一部分只有三种结果,就是每一页最后一项的结果
+            jobItem = GxrcwItem()
             # 抓取一部分数据
-            jobsItem['job_name'] = job.css('ul.posDetailUL.clearfix > li.w1 > h3 > a::text').extract_first()
-            jobsItem['job_url'] = job.css('ul.posDetailUL.clearfix > li.w1 > h3 > a::attr(href)').extract_first()
-            jobsItem['job_company'] = job.css('ul.posDetailUL.clearfix > li.w2 > a::text').extract_first()
-            jobsItem['job_salary'] = job.css('ul.posDetailUL.clearfix > li.w3::text').extract_first()
-            jobsItem['job_address'] = job.css('ul.posDetailUL.clearfix > li.w4::text').extract_first()
-            jobsItem['job_update_time'] = job.css('ul.posDetailUL.clearfix > li.w5::text').extract_first()
+            jobItem['job_name'] = job.css('ul.posDetailUL.clearfix > li.w1 > h3 > a::text').extract_first()
+            jobItem['job_url'] = job.css('ul.posDetailUL.clearfix > li.w1 > h3 > a::attr(href)').extract_first()
+            jobItem['job_company'] = job.css('ul.posDetailUL.clearfix > li.w2 > a::text').extract_first()
+            jobItem['job_salary'] = job.css('ul.posDetailUL.clearfix > li.w3::text').extract_first()
+            jobItem['job_address'] = job.css('ul.posDetailUL.clearfix > li.w4::text').extract_first()
+            jobItem['job_update_time'] = job.css('ul.posDetailUL.clearfix > li.w5::text').extract_first()
             job_detail= [i for i in zip(job.css('ul.qitaUL > li > strong::text').extract(), job.css('ul.qitaUL > li > span::text').extract())]
-            jobsItem['job_recruiting_numbers'] = job_detail[0]
-            jobsItem['job_education'] = job_detail[1]
-            jobsItem['job_experience'] = job_detail[2]
-            jobsItem['job_company_nature'] = job_detail[3]
-            yield scrapy.Request(url=jobsItem['job_url'], callback=self.parse_job_detail, meta={'jobs':jobsItem})
+            jobItem['job_recruiting_numbers'] = job_detail[0]
+            jobItem['job_education'] = job_detail[1]
+            jobItem['job_experience'] = job_detail[2]
+            jobItem['job_company_nature'] = job_detail[3]
+            yield scrapy.Request(url=jobItem['job_url'], callback=self.parse_job_detail, meta={'jobs':jobItem})
 
         # 分页递归爬取
         # 思路:找到下一页按钮的链接,重新爬取
