@@ -8,9 +8,11 @@ class GxrcwspiderSpider(scrapy.Spider):
     # allowed_domains = ["gxrc.com"]
     start_urls = ['http://s.gxrc.com/sJob?schType=1&pageSize=20&orderType=0&listValue=1&keyword=Python&page=1',]
 
+
     def parse(self, response):
         for url in GxrcwspiderSpider.start_urls:
             yield scrapy.Request(url, callback=self.parse_jobs)
+
 
     def parse_jobs(self, response):
         # jobsItems = []
@@ -29,9 +31,11 @@ class GxrcwspiderSpider(scrapy.Spider):
             jobsItem['job_education'] = job_detail[1]
             jobsItem['job_experience'] = job_detail[2]
             jobsItem['job_company_nature'] = job_detail[3]
-            # jobsItems.append(jobsItem)
-        # for item in jobsItems:
             yield scrapy.Request(url=jobsItem['job_url'], callback=self.parse_job_detail, meta={'jobs':jobsItem})
+
+        # 分页递归爬取
+        # 思路:找到下一页按钮的链接,重新爬取
+        # 递归爬取终结条件:下一页按钮不存在
         next_page = 'http://s.gxrc.com/sJob' + response.css('ul.pagination > li.PagedList-skipToNext > a::attr(href)').extract_first() if response.css(
             'ul.pagination > li.PagedList-skipToNext > a::attr(href)') else None
         if next_page is not None:
