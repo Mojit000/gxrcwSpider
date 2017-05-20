@@ -14,9 +14,9 @@ class GxrcwspiderSpider(scrapy.Spider):
 
     def parse_jobs(self, response):
         # jobsItems = []
-        jobsItem = GxrcwItem()
         jobs = response.css('div.rlOne')
         for job in jobs:
+            jobsItem = GxrcwItem()
             # 抓取一部分数据
             jobsItem['job_name'] = job.css('ul.posDetailUL.clearfix > li.w1 > h3 > a::text').extract_first()
             jobsItem['job_url'] = job.css('ul.posDetailUL.clearfix > li.w1 > h3 > a::attr(href)').extract_first()
