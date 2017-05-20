@@ -16,7 +16,6 @@
 ```
 # 错误的代码
 def parse_jobs(self, response):
-        # jobsItems = []
         jobs = response.css('div.rlOne')
         jobsItem = GxrcwItem()
         for job in jobs:
@@ -26,7 +25,6 @@ def parse_jobs(self, response):
 ```
 # 正确的代码
 def parse_jobs(self, response):
-        # jobsItems = []
         jobs = response.css('div.rlOne')
         for job in jobs:
             jobsItem = GxrcwItem()
