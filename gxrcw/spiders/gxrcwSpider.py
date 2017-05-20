@@ -47,7 +47,7 @@ class GxrcwspiderSpider(scrapy.Spider):
         jobsItem = response.meta['jobs']
         jobsItem['job_url'] = response.url
         job_desc_need = response.css('#content > div.gsR_con > div.gsR_con_txt > div > div.gz_info_txt > p::text').extract()
-        jobsItem['job_desc_need'] = '\n'.join(job_desc_need)
-        jobsItem['company_desc'] = response.css('#content > div.gsR_con > div.gz_info > p::text').extract_first()
+        jobsItem['job_desc_need'] = '\n'.join(job_desc_need).strip()
+        jobsItem['company_desc'] = response.css('#content > div.gsR_con > div.gz_info > p::text').extract_first().strip()
         return jobsItem
         
